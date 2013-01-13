@@ -152,7 +152,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-	persist.sys.usb.config=mtp
+        service.adb.root=1 \
+        ro.secure=0 \
+        ro.allow.mock.location=1 \
+        ro.debuggable=1 \
+        persist.sys.usb.config=mtp
 
 # android core stuff
 $(call inherit-product, frameworks/native/build/tablet-dalvik-heap.mk)
