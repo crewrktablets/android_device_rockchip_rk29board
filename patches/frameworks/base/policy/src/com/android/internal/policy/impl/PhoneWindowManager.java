@@ -1256,16 +1256,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // SystemUI (status bar) layout policy
         int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / density;
 
-        if (shortSizeDp < 600) {
-            // 0-599dp: "phone" UI with a separate status & navigation bar
-            mHasSystemNavBar = false;
-            mNavigationBarCanMove = true;
-        } else if (shortSizeDp < 720) {
-            // 600+dp: "phone" UI with modifications for larger screens
-            mHasSystemNavBar = false;
-            mNavigationBarCanMove = false;
-        }
 
+        //netlars
+        //Force Tablet UI
+        mHasSystemNavBar = true;
+        mNavigationBarCanMove = false;
+        
         if (!mHasSystemNavBar) {
             mHasNavigationBar = mContext.getResources().getBoolean(
                     com.android.internal.R.bool.config_showNavigationBar);
@@ -1277,7 +1273,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 else if (navBarOverride.equals("0")) mHasNavigationBar = true;
             }
         } else {
-            mHasNavigationBar = false;
+            mHasNavigationBar = true;
         }
 
         if (mHasSystemNavBar) {
