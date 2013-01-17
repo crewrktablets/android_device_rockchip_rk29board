@@ -6842,7 +6842,7 @@ public class WindowManagerService extends IWindowManager.Stub
             if (navcrewrktablets.equals("TabletUI"))
             outConfig.smallestScreenWidthDp = 721;
         else
-           //default
+           //default ro.crewrktablets.mod=null
             outConfig.smallestScreenWidthDp = (int)(displayInfo.smallestNominalAppWidth / density);
        }
         outConfig.screenLayout = sl;
