@@ -102,7 +102,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
         ro.opengles.version=131072 \
         hwui.render_dirty_regions=false \
         qemu.hw.mainkeys=0 \
-        wifi.interface=wlan0
+        wifi.interface=wlan0 \
+        ro.crewrktablets.mod = TabletUI
 
 # enable ADB
 #PRODUCT_PROPERTY_OVERRIDES := \
