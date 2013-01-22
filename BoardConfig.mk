@@ -25,18 +25,17 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 
 # WLAN
+WPA_SUPPLICANT_VERSION      := VER_0_6_X
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
-WPA_SUPPLICANT_VERSION      := VER_0_8_X
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_HOSTAPD_DRIVER := WEXT
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_WLAN_DEVICE := bcmdhd
-WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/wlan.ko"
-WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/bcm43X9_fw.bin"
-WIFI_DRIVER_FW_PATH_P2P := "/system/etc/firmware/fw_bcm43X9_p2p.bin"
-WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcm43X9_apsta.bin"
-WIFI_DRIVER_MODULE_NAME := "wlan"
+BOARD_HOSTAPD_DRIVER        := WEXT
+#BOARD_WLAN_DEVICE           := ""
+WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
+WIFI_DRIVER_FW_PATH_PARAM   := ""
+WIFI_DRIVER_FW_PATH_STA     := ""
+WIFI_DRIVER_FW_PATH_AP      := ""
+WIFI_DRIVER_FW_PATH_P2P     := ""
+WIFI_DRIVER_MODULE_NAME     := "wlan"
+WIFI_DRIVER_MODULE_ARG      := ""
 
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
