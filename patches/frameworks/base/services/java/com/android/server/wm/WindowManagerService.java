@@ -6815,6 +6815,7 @@ public class WindowManagerService extends IWindowManager.Stub
         // operation.  To this, start with the base screen size and compute the
         // width under the different possible rotations.  We need to un-rotate
         // the current screen dimensions before doing this.
+        String navcrewrktablets = SystemProperties.get("ro.crewrktablets.mod");
         int unrotDw, unrotDh;
         if (rotated) {
             unrotDw = dh;
@@ -6836,9 +6837,14 @@ public class WindowManagerService extends IWindowManager.Stub
         sl = reduceConfigLayout(sl, Surface.ROTATION_90, density, unrotDh, unrotDw);
         sl = reduceConfigLayout(sl, Surface.ROTATION_180, density, unrotDw, unrotDh);
         sl = reduceConfigLayout(sl, Surface.ROTATION_270, density, unrotDh, unrotDw);
-        //netlars
-        //force TabletUI
-        outConfig.smallestScreenWidthDp = 721;
+        if (! "".equals(navcrewrktablets)) {
+            //netlars, force TabletUI
+            if (navcrewrktablets.equals("TabletUI"))
+            outConfig.smallestScreenWidthDp = 721;
+        else
+           //default ro.crewrktablets.mod=null
+            outConfig.smallestScreenWidthDp = (int)(displayInfo.smallestNominalAppWidth / density);
+       }
         outConfig.screenLayout = sl;
     }
 

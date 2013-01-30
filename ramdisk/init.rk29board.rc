@@ -1,7 +1,9 @@
 import init.rk29board.usb.rc
 
-on init    
-    # See storage config details at http://source.android.com/tech/storage/
+on init
+    mount debugfs debugfs /sys/kernel/debug    
+    
+# See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/shell/emulated 0700 shell shell
     #mkdir /storage 0550 system sdcard_r
     mkdir /storage/emulated 0555 root root
@@ -10,7 +12,7 @@ on init
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
 
-    # Support legacy paths
+# Support legacy paths
     symlink /storage/emulated/legacy /sdcard
     symlink /storage/emulated/legacy /mnt/sdcard
     symlink /storage/emulated/legacy /storage/sdcard0
@@ -25,17 +27,15 @@ on init
 
 on fs
     #setprop ro.crypto.umount_sd false
-    
+     
     #insmod /rk29xxnand_ko.ko.3.0.8+
-    #mount ext4 mtd@system /system noatime nodiratime
-    #mount ext4 mtd@userdata /data nosuid nodev noatime nodiratime
-    #mount ext4 mtd@cache /cache nosuid nodev noatime nodiratime    
+    #mount_all /fstab.rk29board    
 
     #mount vfat mtd@user /data/media wait noatime nodiratime nosuid nodev
     mount vfat mtd@user /mnt/shell/emulated wait noatime nodiratime nosuid nodev
 
 on post-fs-data
-    # we will remap this as /mnt/sdcard with the sdcard fuse tool
+# We will remap this as /mnt/sdcard with the sdcard fuse tool
     mkdir /data/media 0770 media_rw media_rw
     setprop vold.post_fs_data_done 1
 
@@ -44,7 +44,7 @@ on init
     symlink /etc/bluez/bcm432x/BCM4329B1_USI_WM-BN-BM-01.hcd /bcm4329_usi.hcd
     symlink /etc/bluez/bcm432x/BCM4329B1_002.002.023.0389.0000_Cybertan-Foxconn_Cls2_extLNA_EDRmaxInputLev+PeakDEVM_NT.hcd /bcm4329_cybertan.hcd
 
-# for adobe reader mobile
+# For adobe reader mobile
     export RK_ADOBE_DE_MOBILE 1
     export EBOOK_PAGE_VISIBLE_NUMBER 2　
     export RK_ADEPT_DEVICE_TYPE mobile
@@ -55,23 +55,22 @@ on init
     export ADOBE_FONTS_DIR  /system/fonts/adobefonts/
 
 on boot
-    mount debugfs /sys/kernel/debug /sys/kernel/debug
     insmod /system/lib/modules/vpu_mem.ko
     insmod /system/lib/modules/vpu_service.ko
     insmod /system/lib/modules/galcore.ko
     insmod /system/lib/modules/rk29-ipp.ko
 
-#backlight
+# Backlight
     chown system system /sys/class/backlight/rk28_bl/brightness
 
-# for wifi
+# For wifi
     mkdir /data/misc/wifi 0770 wifi wifi
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/wifi/sockets/tmp 0440 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     chown dhcp dhcp /data/misc/dhcp
 
-# bluetooth power up/down interface
+# Bluetooth power up/down interface
     chmod 0660 /dev/ttyS0
     chmod 0660 /dev/ttyS2
     chmod 0660 /dev/vflash
@@ -82,7 +81,7 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
     chmod 0777 /sys/class/rfkill/rfkill0/state
 
-#for hdmi
+# For hdmi
     chown root system /sys/class/hdmi/hdmi-0/enable
     chown root system /sys/class/hdmi/hdmi-0/state
     chmod 660 /sys/class/hdmi/hdmi-0/enable
@@ -124,7 +123,7 @@ service hostapd /system/bin/hostapd /data/misc/wifi/hostapd.conf
     disabled
     oneshot
 
-# for realtek wifi
+# For realtek wifi
 service hostapd_rtl /system/bin/hostapd_rtl /data/misc/wifi/hostapd.conf
     class main
     disabled
@@ -145,25 +144,18 @@ service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL
 service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
     class main
 	disabled
-	oneshot
-
-#factory
-  on property:ro.factory.tool=1
-      write /sys/class/gsensor/oratiention gsensor={0,-1,0,0,0,1,1,0,0}
-      write /sys/devices/platform/rk29-keypad/rk29key {menu:MENU,home:HOME,vol+:VOLUP,vol-:VOLDOWN,play:PLAY,esc    :ESC,sensor:CAMERA}
-      write /sys/devices/platform/rk29_backlight/rk29backlight 100			
+	oneshot			
 
 service battery_charger /charger
     class charger
 
-#factory   
+# Factory   
 on property:ro.factory.tool=1     
     write /sys/class/gsensor_class/orientation gsensor={-1,0,0,0,0,1,0,-1,0}
     write /sys/devices/platform/rk29-keypad/rk29key {menu:MENU,home:HOME,vol+:VOLUP,vol-:VOLDOWN,play:PLAY,esc:ESC,sensor:CAMERA}
     write /sys/devices/platform/rk29_backlight/rk29backlight 100
 
-#-------------------------------------------------------#
-#hdmi
+# Hdmi
 service hdmi /system/bin/hdmi_init
         user system
         group system

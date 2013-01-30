@@ -87,13 +87,16 @@ public class DateView extends TextView implements OnClickListener, OnLongClickLi
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //netlars FC Statusbar, force TabletUI
-        /*if (mParent == null) {
+        String navcrewrktablets = SystemProperties.get("ro.crewrktablets.mod");
+        if (! "".equals(navcrewrktablets)) {
+            //netlars FC Statusbar, force TabletUI
+            if (navcrewrktablets.equals("TabletUI"))
+            return 0;
+        }else if (mParent == null) {
             mParent = (RelativeLayout) getParent();
             mParent.setOnClickListener(this);
             mParent.setOnLongClickListener(this);
-        }*/
-
+       }
         super.onDraw(canvas);
     }
 
