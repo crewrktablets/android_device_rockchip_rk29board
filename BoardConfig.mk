@@ -25,27 +25,28 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 
 # WLAN
-BOARD_WPA_SUPPLICANT_DRIVER := WEXT
-WPA_SUPPLICANT_VERSION      := VER_0_8_X
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_HOSTAPD_DRIVER := WEXT
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_WLAN_DEVICE := bcmdhd
-WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/wlan.ko"
-WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/bcm43X9_fw.bin"
-WIFI_DRIVER_FW_PATH_P2P := "/system/etc/firmware/fw_bcm43X9_p2p.bin"
-WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcm43X9_apsta.bin"
-WIFI_DRIVER_MODULE_NAME := "wlan"
+#BOARD_WLAN_DEVICE             := bcm94319wlusbn4l
+#BOARD_SOFTAP_DEVICE           := bcm94319wlusbn4l
+WPA_SUPPLICANT_VERSION        := VER_0_8_X
+BOARD_WPA_SUPPLICANT_DRIVER   := WEXT
+WIFI_DRIVER_MODULE_PATH       := "/system/lib/modules/wlan.ko"
+#WIFI_DRIVER_FW_STA_PATH       := "/system/etc/firmware/fw_bcm4329.bin"
+#WIFI_DRIVER_FW_AP_PATH        := "/system/etc/firmware/fw_bcm4329_apsta.bin"
+#WIFI_DRIVER_MODULE_ARG        := "iface_name=wlan0 firmware_path=/system/etc/firmware/fw_bcm4329.bin nvram_path=/system/etc/firmware/nvram.txt"
+WIFI_DRIVER_MODULE_NAME       := "wlan"
 
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
+TARGET_BOARD_PLATFORM_GPU := VIVANTE
+BOARD_USES_VIVANTE := true
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
+COMMON_GLOBAL_CFLAGS += -DSURFACEFLINGER_FORCE_SCREEN_RELEASE -DNO_RGBX_8888 -DMISSING_GRALLOC_BUFFERS
 
 # Audio
 #BOARD_USES_GENERIC_AUDIO := true
 BOARD_USES_ALSA_AUDIO := true
+BOARD_USES_AUDIO_LEGACY := true
 
 # Camera Setup
 #BOARD_USES_LEGACY_CAMERA := true
@@ -62,6 +63,12 @@ BOARD_HAVE_VPU := true
 # Enable WEBGL in WebKit
 ENABLE_WEBGL := true
 TARGET_FORCE_CPU_UPLOAD := true
+
+# USB Mass Storage. Original path := /sys/devices/platform/usb_mass_storage/lun0/file
+#TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/??
+
+# Indicate that the board has an Internal SD Card
+BOARD_HAS_SDCARD_INTERNAL := true
 
 # Vold
 BOARD_VOLD_MAX_PARTITIONS := 12
