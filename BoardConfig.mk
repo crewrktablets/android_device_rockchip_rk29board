@@ -27,7 +27,7 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 # WLAN
 #BOARD_WLAN_DEVICE             := bcm94319wlusbn4l
 #BOARD_SOFTAP_DEVICE           := bcm94319wlusbn4l
-WPA_SUPPLICANT_VERSION        := VER_0_8_X
+#WPA_SUPPLICANT_VERSION        := VER_0_8_X
 BOARD_WPA_SUPPLICANT_DRIVER   := WEXT
 WIFI_DRIVER_MODULE_PATH       := "/system/lib/modules/wlan.ko"
 #WIFI_DRIVER_FW_STA_PATH       := "/system/etc/firmware/fw_bcm4329.bin"
@@ -68,10 +68,10 @@ TARGET_FORCE_CPU_UPLOAD := true
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/??
 
 # Indicate that the board has an Internal SD Card
+BOARD_SDCARD_INTERNAL_DEVICE := /dev/block/mmcblk0p1
 BOARD_HAS_SDCARD_INTERNAL := true
 
 # Vold
-BOARD_VOLD_MAX_PARTITIONS := 12
+BOARD_VOLD_MAX_PARTITIONS := 20
 BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
-BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/class/android_usb/f_mass_storage/lun%d/file"
+TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/class/android_usb/f_mass_storage/lun0/file
