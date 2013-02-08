@@ -24,34 +24,49 @@ SMALLER_FONT_FOOTPRINT := true
 BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 
-# WLAN
-#BOARD_WLAN_DEVICE             := bcm94319wlusbn4l
-#BOARD_SOFTAP_DEVICE           := bcm94319wlusbn4l
-#WPA_SUPPLICANT_VERSION        := VER_0_8_X
-BOARD_WPA_SUPPLICANT_DRIVER   := WEXT
-WIFI_DRIVER_MODULE_PATH       := "/system/lib/modules/wlan.ko"
-#WIFI_DRIVER_FW_STA_PATH       := "/system/etc/firmware/fw_bcm4329.bin"
-#WIFI_DRIVER_FW_AP_PATH        := "/system/etc/firmware/fw_bcm4329_apsta.bin"
-#WIFI_DRIVER_MODULE_ARG        := "iface_name=wlan0 firmware_path=/system/etc/firmware/fw_bcm4329.bin nvram_path=/system/etc/firmware/nvram.txt"
-WIFI_DRIVER_MODULE_NAME       := "wlan"
+# Gsensor board config
+# we can use this string : mma7660, mxc622x, bma250
+SW_BOARD_USES_GSENSOR_TYPE := mma7660
+SW_BOARD_GSENSOR_DIRECT_X := true
+SW_BOARD_GSENSOR_DIRECT_Y := false
+SW_BOARD_GSENSOR_DIRECT_Z := true
+SW_BOARD_GSENSOR_XY_REVERT := true
+
+# Wifi related defines
+BOARD_WPA_SUPPLICANT_DRIVER := WEXT
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+
+# Wifi chipset select
+# usb wifi "bcm94319"; sdio wifi "wlusbn4" ARNOVA 8G2I Tabs
+SW_BOARD_USR_WIFI := bcm94319
+
+# no gps,even default
+BOARD_USES_GPS_TYPE := nogps
 
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
 TARGET_BOARD_PLATFORM_GPU := VIVANTE
-BOARD_USES_VIVANTE := true
+#BOARD_USES_VIVANTE := true
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
 COMMON_GLOBAL_CFLAGS += -DSURFACEFLINGER_FORCE_SCREEN_RELEASE -DNO_RGBX_8888 -DMISSING_GRALLOC_BUFFERS
+SW_BOARD_ROTATION_180 = true
+
+# no hardware camera
+USE_CAMERA_STUB := true
 
 # Audio
-#BOARD_USES_GENERIC_AUDIO := true
-BOARD_USES_ALSA_AUDIO := true
-BOARD_USES_AUDIO_LEGACY := true
+HAVE_HTC_AUDIO_DRIVER := true
+BOARD_USES_GENERIC_AUDIO := true
+#BOARD_USES_ALSA_AUDIO := true
+#BOARD_USES_AUDIO_LEGACY := true
 
-# Camera Setup
-#BOARD_USES_LEGACY_CAMERA := true
-USE_CAMERA_STUB := true
-#BOARD_CAMERA_USE_MM_HEAP := true
+# Gps 
+# simulator :taget board does not have a gps hardware module;
+BOARD_USES_GPS_TYPE := simulator
+
+# use our own su for root
+BOARD_USES_ROOT_SU := true
 
 # No HWCOMPOSER - TO DO
 BOARD_USES_HWCOMPOSER := false
@@ -75,3 +90,6 @@ BOARD_HAS_SDCARD_INTERNAL := true
 BOARD_VOLD_MAX_PARTITIONS := 20
 BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/class/android_usb/f_mass_storage/lun0/file
+
+# hardware module include file path
+# TARGET_HARDWARE_INCLUDE := /device/rk29board/include
