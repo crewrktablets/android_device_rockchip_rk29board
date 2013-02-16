@@ -61,7 +61,7 @@ on boot
     insmod /system/lib/modules/galcore.ko
     insmod /system/lib/modules/rk29-ipp.ko
 
-#backlight
+# backlight
     chown system system /sys/class/backlight/rk28_bl/brightness
 
 # for wifi
@@ -82,7 +82,7 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
     chmod 0777 /sys/class/rfkill/rfkill0/state
 
-#for hdmi
+# for hdmi
     chown root system /sys/class/hdmi/hdmi-0/enable
     chown root system /sys/class/hdmi/hdmi-0/state
     chmod 660 /sys/class/hdmi/hdmi-0/enable
@@ -96,7 +96,19 @@ service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
 
 service wpa_supplicant /system/bin/wpa_supplicant \
     -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
-    #-Dnl80211 -iwlan0 -e/data/misc/wifi/entropy.bin
+    #-Dnl80211 -iwlan0 -puse_p2p_group_interface=1 -e/data/misc/wifi/entropy.bin
+    #   we will start as root and wpa_supplicant will switch to user wifi
+    #   after setting up the capabilities required for WEXT
+    #   user wifi
+    group wifi inet
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+	
+service p2p_supplicant /system/bin/wpa_supplicant \
+    -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
+    #-Dnl80211 -iwlan0 -puse_p2p_group_interface=1 -e/data/misc/wifi/entropy.bin
     #   we will start as root and wpa_supplicant will switch to user wifi
     #   after setting up the capabilities required for WEXT
     #   user wifi
@@ -105,19 +117,6 @@ service wpa_supplicant /system/bin/wpa_supplicant \
     socket wpa_wlan0 dgram 660 wifi wifi
     disabled
     oneshot
-
-	
-#service p2p_supplicant /system/bin/wpa_supplicant \
-    #-Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
-    #-Dnl80211 -iwlan0 -puse_p2p_group_interface=1 -e/data/misc/wifi/entropy.bin
-    #   we will start as root and wpa_supplicant will switch to user wifi
-    #   after setting up the capabilities required for WEXT
-    #   user wifi
-    #   group wifi inet keystore
-    #class main
-    #socket wpa_wlan0 dgram 660 wifi wifi
-    #disabled
-    #oneshot
 	
 service hostapd /system/bin/hostapd /data/misc/wifi/hostapd.conf
     class main
@@ -147,23 +146,17 @@ service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
 	disabled
 	oneshot
 
-#factory
-  on property:ro.factory.tool=1
-      write /sys/class/gsensor/oratiention gsensor={0,-1,0,0,0,1,1,0,0}
-      write /sys/devices/platform/rk29-keypad/rk29key {menu:MENU,home:HOME,vol+:VOLUP,vol-:VOLDOWN,play:PLAY,esc    :ESC,sensor:CAMERA}
-      write /sys/devices/platform/rk29_backlight/rk29backlight 100			
-
 service battery_charger /charger
     class charger
 
-#factory   
+# factory   
 on property:ro.factory.tool=1     
     write /sys/class/gsensor_class/orientation gsensor={-1,0,0,0,0,1,0,-1,0}
     write /sys/devices/platform/rk29-keypad/rk29key {menu:MENU,home:HOME,vol+:VOLUP,vol-:VOLDOWN,play:PLAY,esc:ESC,sensor:CAMERA}
     write /sys/devices/platform/rk29_backlight/rk29backlight 100
 
 #-------------------------------------------------------#
-#hdmi
+# hdmi
 service hdmi /system/bin/hdmi_init
         user system
         group system

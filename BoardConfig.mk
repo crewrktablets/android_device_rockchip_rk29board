@@ -11,10 +11,16 @@ PRODUCT_CHARACTERISTICS := tablet
 
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
+TARGET_ARCH_VARIANT_CPU := cortex-a8
+ARCH_ARM_HAVE_NEON := true
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
 ARCH_ARM_HAVE_TLS_REGISTER := true
+TARGET_GLOBAL_CFLAGS += -mtune=cortex-a8 -mfpu=neon
+# -mfloat-abi=softfp
+TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a8 -mfpu=neon
+# -mfloat-abi=softfp
 
 # Use a smaller subset of system fonts to keep image size lower
 SMALLER_FONT_FOOTPRINT := true
@@ -22,20 +28,38 @@ SMALLER_FONT_FOOTPRINT := true
 
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 
 # WLAN
-WPA_SUPPLICANT_VERSION      := VER_0_6_X
+#BOARD_WLAN_DEVICE := rtl8192cu
+#WPA_SUPPLICANT_VERSION := VER_0_8_X
+#BOARD_WPA_SUPPLICANT_DRIVER := WEXT
+#BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_rtl
+#BOARD_HOSTAPD_DRIVER        := WEXT
+#BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_rtl
+#WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
+#WIFI_DRIVER_FW_PATH_PARAM   := ""
+#WIFI_DRIVER_FW_PATH_STA     := ""
+#WIFI_DRIVER_FW_PATH_AP      := ""
+#WIFI_DRIVER_FW_PATH_P2P     := ""
+#WIFI_DRIVER_MODULE_NAME     := wlan
+#WIFI_DRIVER_MODULE_ARG      := ""
+
+#TARGET_CUSTOM_WIFI := device/rockchip/rk29board/wifi_realtek.c
+
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
-BOARD_HOSTAPD_DRIVER        := WEXT
-#BOARD_WLAN_DEVICE           := ""
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
+#BOARD_HOSTAPD_DRIVER        := NL80211
+#BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
+BOARD_WLAN_DEVICE           := bcmdhd
+#WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
+WIFI_DRIVER_FW_PATH_STA     := "/system/etc/firmware/fw_bcm4329.bin"
+WIFI_DRIVER_FW_PATH_P2P     := "/system/etc/firmware/fw_bcm4329_p2p.bin"
+WIFI_DRIVER_FW_PATH_AP      := "/system/etc/firmware/fw_bcm4329_apsta.bin"
 WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
-WIFI_DRIVER_FW_PATH_PARAM   := ""
-WIFI_DRIVER_FW_PATH_STA     := ""
-WIFI_DRIVER_FW_PATH_AP      := ""
-WIFI_DRIVER_FW_PATH_P2P     := ""
 WIFI_DRIVER_MODULE_NAME     := "wlan"
-WIFI_DRIVER_MODULE_ARG      := ""
 
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
@@ -44,7 +68,7 @@ BOARD_USE_LEGACY_UI := true
 
 # Audio
 #BOARD_USES_GENERIC_AUDIO := true
-BOARD_USES_ALSA_AUDIO := true
+#BOARD_USES_ALSA_AUDIO := true
 
 # Camera Setup
 #BOARD_USES_LEGACY_CAMERA := true
@@ -52,7 +76,7 @@ USE_CAMERA_STUB := true
 #BOARD_CAMERA_USE_MM_HEAP := true
 
 # No HWCOMPOSER - TO DO
-BOARD_USES_HWCOMPOSER := false
+BOARD_USES_HWCOMPOSER := true
 
 # Misc display settings
 BOARD_USE_SKIA_LCDTEXT := true
