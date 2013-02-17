@@ -16,10 +16,6 @@
 DEVICE_PACKAGE_OVERLAYS := device/rockchip/rk29board/overlay
 #PRODUCT_CHARACTERISTICS := nosdcard
 
-# Copy prebuilt bins
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/bin,system/bin)
-
 # Copy prebuilt etcs
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc,system/etc)

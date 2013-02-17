@@ -21,4 +21,3 @@
 # function: add_lunch_combo generic-eng
 
 add_lunch_combo full_rk29board-userdebug
-add_lunch_combo cm_rk29board-userdebug
