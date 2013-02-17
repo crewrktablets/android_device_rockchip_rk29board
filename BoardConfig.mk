@@ -27,9 +27,9 @@ SMALLER_FONT_FOOTPRINT := true
 #MINIMAL_FONT_FOOTPRINT := true
 
 # Some framework code requires this to enable BT
-BOARD_HAVE_BLUETOOTH := true
-BOARD_HAVE_BLUETOOTH_BCM := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
+#BOARD_HAVE_BLUETOOTH := true
+#BOARD_HAVE_BLUETOOTH_BCM := true
+#BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 
 # WLAN
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
