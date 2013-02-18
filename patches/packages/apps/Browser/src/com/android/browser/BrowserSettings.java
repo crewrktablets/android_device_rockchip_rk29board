@@ -291,11 +291,9 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
                     Float.toString(getInvertedContrast()));
         }
 
-        if (isDebugEnabled()) {
-            settings.setProperty(WebViewProperties.gfxEnableCpuUploadPath,
-                    enableCpuUploadPath() ? "true" : "false");
-        }
-
+        settings.setProperty(WebViewProperties.gfxEnableCpuUploadPath,
+            enableCpuUploadPath() ? "true" : "false");
+        
         settings.setLinkPrefetchEnabled(mLinkPrefetchAllowed);
     }
 
@@ -759,9 +757,9 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
 
     public boolean enableCpuUploadPath() {
         if (!isDebugEnabled()) {
-            return false;
+            return true;
         }
-        return mPrefs.getBoolean(PREF_ENABLE_CPU_UPLOAD_PATH, false);
+        return mPrefs.getBoolean(PREF_ENABLE_CPU_UPLOAD_PATH, true);
     }
 
     public boolean enableJavascriptConsole() {

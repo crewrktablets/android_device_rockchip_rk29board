@@ -42,7 +42,7 @@
 
     <CheckBoxPreference
         android:key="enable_cpu_upload_path"
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:title="@string/pref_development_cpu_upload_path" />
 
     <!-- The javascript console is enabled by default when the user has
