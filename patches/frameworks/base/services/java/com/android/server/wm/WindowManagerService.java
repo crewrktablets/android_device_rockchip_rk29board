@@ -41,8 +41,6 @@ import static android.view.WindowManager.LayoutParams.TYPE_UNIVERSE_BACKGROUND;
 import static android.view.WindowManager.LayoutParams.TYPE_WALLPAPER;
 
 import com.android.internal.app.IBatteryStats;
-import com.android.internal.app.ThemeUtils;
-
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.policy.impl.PhoneWindowManager;
 import com.android.internal.view.IInputContext;
@@ -270,6 +268,9 @@ public class WindowManagerService extends IWindowManager.Stub
     /** Amount of time (in milliseconds) to delay before declaring a window freeze timeout. */
     static final int WINDOW_FREEZE_TIMEOUT_DURATION = 2000;
 
+    /** Fraction of animation at which the recents thumbnail becomes completely transparent */
+    static final float RECENTS_THUMBNAIL_FADEOUT_FRACTION = 0.25f;
+
     /**
      * If true, the window manager will do its own custom freezing and general
      * management of the screen during rotation.
@@ -297,13 +298,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
     private static final float THUMBNAIL_ANIMATION_DECELERATE_FACTOR = 1.5f;
 
-
-    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            mUiContext = null;
-        }
-    };
-
     final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -319,7 +313,6 @@ public class WindowManagerService extends IWindowManager.Stub
     int mCurrentUserId;
 
     final Context mContext;
-    private Context mUiContext;
 
     final boolean mHaveInputMethods;
 
@@ -586,8 +579,6 @@ public class WindowManagerService extends IWindowManager.Stub
     final DisplayManagerService mDisplayManagerService;
     final DisplayManager mDisplayManager;
 
-    private boolean mForceDisableHardwareKeyboard = false;
-
     // Who is holding the screen on.
     Session mHoldingScreenOn;
     PowerManager.WakeLock mHoldingScreenWakeLock;
@@ -833,7 +824,7 @@ public class WindowManagerService extends IWindowManager.Stub
         mTransitionAnimationScale = Settings.Global.getFloat(context.getContentResolver(),
                 Settings.Global.TRANSITION_ANIMATION_SCALE, mTransitionAnimationScale);
         setAnimatorDurationScale(Settings.Global.getFloat(context.getContentResolver(),
-                Settings.Global.ANIMATOR_DURATION_SCALE, mTransitionAnimationScale));
+                Settings.Global.ANIMATOR_DURATION_SCALE, mAnimatorDurationScale));
 
         // Track changes to DevicePolicyManager state so we can enable/disable keyguard.
         IntentFilter filter = new IntentFilter();
@@ -848,9 +839,6 @@ public class WindowManagerService extends IWindowManager.Stub
         mFxSession = new SurfaceSession();
         mAnimator = new WindowAnimator(this);
 
-        mForceDisableHardwareKeyboard = context.getResources().getBoolean(
-                com.android.internal.R.bool.config_forceDisableHardwareKeyboard);
-
         initPolicy(uiHandler);
 
         // Add ourself to the Watchdog monitors.
@@ -862,15 +850,6 @@ public class WindowManagerService extends IWindowManager.Stub
         } finally {
             Surface.closeTransaction();
         }
-
-        ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
-    }
-
-    private Context getUiContext() {
-        if (mUiContext == null) {
-            mUiContext = ThemeUtils.createUiContext(mContext);
-        }
-        return mUiContext != null ? mUiContext : mContext;
     }
 
     public InputMonitor getInputMonitor() {
@@ -943,6 +922,27 @@ public class WindowManagerService extends IWindowManager.Stub
         return windowList;
     }
 
+    /**
+     * Recursive search through a WindowList and all of its windows' children.
+     * @param targetWin The window to search for.
+     * @param windows The list to search.
+     * @return The index of win in windows or of the window that is an ancestor of win.
+     */
+    private int indexOfWinInWindowList(WindowState targetWin, WindowList windows) {
+        for (int i = windows.size() - 1; i >= 0; i--) {
+            final WindowState w = windows.get(i);
+            if (w == targetWin) {
+                return i;
+            }
+            if (!w.mChildWindows.isEmpty()) {
+                if (indexOfWinInWindowList(targetWin, w.mChildWindows) >= 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     private void addWindowToListInOrderLocked(WindowState win, boolean addToToken) {
         final IWindow client = win.mClient;
         final WindowToken token = win.mToken;
@@ -966,13 +966,13 @@ public class WindowManagerService extends IWindowManager.Stub
                         // Base windows go behind everything else.
                         WindowState lowestWindow = tokenWindowList.get(0);
                         placeWindowBefore(lowestWindow, win);
-                        tokenWindowsPos = token.windows.indexOf(lowestWindow);
+                        tokenWindowsPos = indexOfWinInWindowList(lowestWindow, token.windows);
                     } else {
                         AppWindowToken atoken = win.mAppToken;
                         WindowState lastWindow = tokenWindowList.get(index);
                         if (atoken != null && lastWindow == atoken.startingWindow) {
                             placeWindowBefore(lastWindow, win);
-                            tokenWindowsPos = token.windows.indexOf(lastWindow);
+                            tokenWindowsPos = indexOfWinInWindowList(lastWindow, token.windows);
                         } else {
                             int newIdx = findIdxBasedOnAppTokens(win);
                             //there is a window above this one associated with the same
@@ -988,7 +988,8 @@ public class WindowManagerService extends IWindowManager.Stub
                                 // No window from token found on win's display.
                                 tokenWindowsPos = 0;
                             } else {
-                                tokenWindowsPos = token.windows.indexOf(windows.get(newIdx)) + 1;
+                                tokenWindowsPos = indexOfWinInWindowList(
+                                        windows.get(newIdx), token.windows) + 1;
                             }
                             mWindowsChanged = true;
                         }
@@ -2872,7 +2873,7 @@ public class WindowManagerService extends IWindowManager.Stub
                     }
                     if (win.isConfigChanged()) {
                         if (DEBUG_CONFIGURATION) Slog.i(TAG, "Window " + win
-                                + " visible with new config: " + win.mConfiguration);
+                                + " visible with new config: " + mCurConfiguration);
                         outConfig.setTo(mCurConfiguration);
                     }
                 }
@@ -3202,7 +3203,7 @@ public class WindowManagerService extends IWindowManager.Stub
         return info;
     }
 
-    private AttributeCache.Entry getCachedAnimations(WindowManager.LayoutParams lp) {
+    private AttributeCache.Entry getCachedAnimations(int userId, WindowManager.LayoutParams lp) {
         if (DEBUG_ANIM) Slog.v(TAG, "Loading animations: layout params pkg="
                 + (lp != null ? lp.packageName : null)
                 + " resId=0x" + (lp != null ? Integer.toHexString(lp.windowAnimations) : null));
@@ -3217,13 +3218,13 @@ public class WindowManagerService extends IWindowManager.Stub
             }
             if (DEBUG_ANIM) Slog.v(TAG, "Loading animations: picked package="
                     + packageName);
-            return AttributeCache.instance().get(packageName, resId,
+            return AttributeCache.instance().get(userId, packageName, resId,
                     com.android.internal.R.styleable.WindowAnimation);
         }
         return null;
     }
 
-    private AttributeCache.Entry getCachedAnimations(String packageName, int resId) {
+    private AttributeCache.Entry getCachedAnimations(int userId, String packageName, int resId) {
         if (DEBUG_ANIM) Slog.v(TAG, "Loading animations: package="
                 + packageName + " resId=0x" + Integer.toHexString(resId));
         if (packageName != null) {
@@ -3232,17 +3233,17 @@ public class WindowManagerService extends IWindowManager.Stub
             }
             if (DEBUG_ANIM) Slog.v(TAG, "Loading animations: picked package="
                     + packageName);
-            return AttributeCache.instance().get(packageName, resId,
+            return AttributeCache.instance().get(userId, packageName, resId,
                     com.android.internal.R.styleable.WindowAnimation);
         }
         return null;
     }
 
-    Animation loadAnimation(WindowManager.LayoutParams lp, int animAttr) {
+    Animation loadAnimation(int userId, WindowManager.LayoutParams lp, int animAttr) {
         int anim = 0;
         Context context = mContext;
         if (animAttr >= 0) {
-            AttributeCache.Entry ent = getCachedAnimations(lp);
+            AttributeCache.Entry ent = getCachedAnimations(userId, lp);
             if (ent != null) {
                 context = ent.context;
                 anim = ent.array.getResourceId(animAttr, 0);
@@ -3254,11 +3255,11 @@ public class WindowManagerService extends IWindowManager.Stub
         return null;
     }
 
-    private Animation loadAnimation(String packageName, int resId) {
+    private Animation loadAnimation(int userId, String packageName, int resId) {
         int anim = 0;
         Context context = mContext;
         if (resId >= 0) {
-            AttributeCache.Entry ent = getCachedAnimations(packageName, resId);
+            AttributeCache.Entry ent = getCachedAnimations(userId, packageName, resId);
             if (ent != null) {
                 context = ent.context;
                 anim = resId;
@@ -3385,13 +3386,24 @@ public class WindowManagerService extends IWindowManager.Stub
                 Animation scale = new ScaleAnimation(1, scaleW, 1, scaleH,
                         computePivot(mNextAppTransitionStartX, 1 / scaleW),
                         computePivot(mNextAppTransitionStartY, 1 / scaleH));
-                AnimationSet set = new AnimationSet(true);
+                AnimationSet set = new AnimationSet(false);
                 Animation alpha = new AlphaAnimation(1, 0);
                 scale.setDuration(duration);
-                scale.setInterpolator(
-                        new DecelerateInterpolator(THUMBNAIL_ANIMATION_DECELERATE_FACTOR));
+                scale.setInterpolator(AnimationUtils.loadInterpolator(mContext,
+                        com.android.internal.R.interpolator.decelerate_quad));
                 set.addAnimation(scale);
                 alpha.setDuration(duration);
+                alpha.setInterpolator(new Interpolator() {
+                    @Override
+                    public float getInterpolation(float input) {
+                        if (input < RECENTS_THUMBNAIL_FADEOUT_FRACTION) {
+                            // linear response
+                            return input / RECENTS_THUMBNAIL_FADEOUT_FRACTION;
+                        }
+                        // complete
+                        return 1;
+                    }
+                });
                 set.addAnimation(alpha);
                 set.setFillBefore(true);
                 a = set;
@@ -3486,7 +3498,7 @@ public class WindowManagerService extends IWindowManager.Stub
             Animation a;
             boolean initialized = false;
             if (mNextAppTransitionType == ActivityOptions.ANIM_CUSTOM) {
-                a = loadAnimation(mNextAppTransitionPackage, enter ?
+                a = loadAnimation(atoken.userId, mNextAppTransitionPackage, enter ?
                         mNextAppTransitionEnter : mNextAppTransitionExit);
                 if (DEBUG_APP_TRANSITIONS || DEBUG_ANIM) Slog.v(TAG,
                         "applyAnimation: atoken=" + atoken
@@ -3567,7 +3579,7 @@ public class WindowManagerService extends IWindowManager.Stub
                                 : com.android.internal.R.styleable.WindowAnimation_wallpaperIntraCloseExitAnimation;
                         break;
                 }
-                a = animAttr != 0 ? loadAnimation(lp, animAttr) : null;
+                a = animAttr != 0 ? loadAnimation(atoken.userId, lp, animAttr) : null;
                 if (DEBUG_APP_TRANSITIONS || DEBUG_ANIM) Slog.v(TAG,
                         "applyAnimation: atoken=" + atoken
                         + " anim=" + a
@@ -3754,7 +3766,7 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
-    public void addAppToken(int addPos, IApplicationToken token,
+    public void addAppToken(int addPos, int userId, IApplicationToken token,
             int groupId, int requestedOrientation, boolean fullscreen, boolean showWhenLocked) {
         if (!checkCallingPermission(android.Manifest.permission.MANAGE_APP_TOKENS,
                 "addAppToken()")) {
@@ -3781,7 +3793,7 @@ public class WindowManagerService extends IWindowManager.Stub
                 Slog.w(TAG, "Attempted to add existing app token: " + token);
                 return;
             }
-            atoken = new AppWindowToken(this, token);
+            atoken = new AppWindowToken(this, userId, token);
             atoken.inputDispatchingTimeoutNanos = inputDispatchingTimeoutNanos;
             atoken.groupId = groupId;
             atoken.appFullscreen = fullscreen;
@@ -3832,22 +3844,23 @@ public class WindowManagerService extends IWindowManager.Stub
         final WindowList windows = getDefaultWindowListLocked();
         int pos = windows.size() - 1;
         while (pos >= 0) {
-            WindowState wtoken = windows.get(pos);
+            WindowState win = windows.get(pos);
             pos--;
-            if (wtoken.mAppToken != null) {
+            if (win.mAppToken != null) {
                 // We hit an application window. so the orientation will be determined by the
                 // app window. No point in continuing further.
                 return (mLastWindowForcedOrientation=ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             }
-            if (!wtoken.isVisibleLw() || !wtoken.mPolicyVisibilityAfterAnim) {
+            if (!win.isVisibleLw() || !win.mPolicyVisibilityAfterAnim) {
                 continue;
             }
-            int req = wtoken.mAttrs.screenOrientation;
+            int req = win.mAttrs.screenOrientation;
             if((req == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) ||
                     (req == ActivityInfo.SCREEN_ORIENTATION_BEHIND)){
                 continue;
             }
 
+            if (DEBUG_ORIENTATION) Slog.v(TAG, win + " forcing orientation to " + req);
             return (mLastWindowForcedOrientation=req);
         }
         return (mLastWindowForcedOrientation=ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -4397,8 +4410,8 @@ public class WindowManagerService extends IWindowManager.Stub
             if (DEBUG_STARTING_WINDOW) Slog.v(TAG, "Checking theme of starting window: 0x"
                     + Integer.toHexString(theme));
             if (theme != 0) {
-                AttributeCache.Entry ent = AttributeCache.instance().get(pkg, theme,
-                        com.android.internal.R.styleable.Window);
+                AttributeCache.Entry ent = AttributeCache.instance().get(wtoken.userId,
+                        pkg, theme, com.android.internal.R.styleable.Window);
                 if (ent == null) {
                     // Whoops!  App doesn't exist.  Um.  Okay.  We'll just
                     // pretend like we didn't see that.
@@ -5438,13 +5451,13 @@ public class WindowManagerService extends IWindowManager.Stub
     // Called by window manager policy.  Not exposed externally.
     @Override
     public void shutdown(boolean confirm) {
-        ShutdownThread.shutdown(getUiContext(), confirm);
+        ShutdownThread.shutdown(mContext, confirm);
     }
 
     // Called by window manager policy.  Not exposed externally.
     @Override
     public void rebootSafeMode(boolean confirm) {
-        ShutdownThread.rebootSafeMode(getUiContext(), confirm);
+        ShutdownThread.rebootSafeMode(mContext, confirm);
     }
 
     public void setInputFilter(IInputFilter filter) {
@@ -5452,12 +5465,6 @@ public class WindowManagerService extends IWindowManager.Stub
             throw new SecurityException("Requires FILTER_EVENTS permission");
         }
         mInputManager.setInputFilter(filter);
-    }
-
-    // Called by window manager policy.  Not exposed externally.
-    @Override
-    public void reboot() {
-        ShutdownThread.reboot(getUiContext(), null, true);
     }
 
     public void setCurrentUser(final int newUserId) {
@@ -5807,50 +5814,64 @@ public class WindowManagerService extends IWindowManager.Stub
             // Figure out the part of the screen that is actually the app.
             boolean including = false;
             final WindowList windows = displayContent.getWindowList();
-            for (int i = windows.size() - 1; i >= 0; i--) {
-                WindowState ws = windows.get(i);
-                if (!ws.mHasSurface) {
-                    continue;
-                }
-                if (ws.mLayer >= aboveAppLayer) {
-                    continue;
-                }
-                // When we will skip windows: when we are not including
-                // ones behind a window we didn't skip, and we are actually
-                // taking a screenshot of a specific app.
-                if (!including && appToken != null) {
-                    // Also, we can possibly skip this window if it is not
-                    // an IME target or the application for the screenshot
-                    // is not the current IME target.
-                    if (!ws.mIsImWindow || !isImeTarget) {
-                        // And finally, this window is of no interest if it
-                        // is not associated with the screenshot app.
-                        if (ws.mAppToken == null || ws.mAppToken.token != appToken) {
-                            continue;
+            try {
+                Surface.openTransaction();
+                for (int i = windows.size() - 1; i >= 0; i--) {
+                    WindowState ws = windows.get(i);
+                    if (!ws.mHasSurface) {
+                        continue;
+                    }
+                    if (ws.mLayer >= aboveAppLayer) {
+                        continue;
+                    }
+                    // When we will skip windows: when we are not including
+                    // ones behind a window we didn't skip, and we are actually
+                    // taking a screenshot of a specific app.
+                    if (!including && appToken != null) {
+                        // Also, we can possibly skip this window if it is not
+                        // an IME target or the application for the screenshot
+                        // is not the current IME target.
+                        if (!ws.mIsImWindow || !isImeTarget) {
+                            // And finally, this window is of no interest if it
+                            // is not associated with the screenshot app.
+                            if (ws.mAppToken == null || ws.mAppToken.token != appToken) {
+                                continue;
+                            }
                         }
                     }
-                }
 
-                // We keep on including windows until we go past a full-screen
-                // window.
-                including = !ws.mIsImWindow && !ws.isFullscreen(dw, dh);
+                    // We keep on including windows until we go past a full-screen
+                    // window.
+                    including = !ws.mIsImWindow && !ws.isFullscreen(dw, dh);
 
-                if (maxLayer < ws.mWinAnimator.mSurfaceLayer) {
-                    maxLayer = ws.mWinAnimator.mSurfaceLayer;
+                    final WindowStateAnimator winAnimator = ws.mWinAnimator;
+
+                    // The setSize() method causes all previous Surface transactions to sync to
+                    // the SurfaceFlinger. This will force any outstanding setLayer calls to be
+                    // synced as well for screen capture. Without this we can get black bitmaps.
+                    Surface surface = winAnimator.mSurface;
+                    surface.setSize(surface.getWidth(), surface.getHeight());
+
+
+                    if (maxLayer < winAnimator.mSurfaceLayer) {
+                        maxLayer = winAnimator.mSurfaceLayer;
+                    }
+
+                    // Don't include wallpaper in bounds calculation
+                    if (!ws.mIsWallpaper) {
+                        final Rect wf = ws.mFrame;
+                        final Rect cr = ws.mContentInsets;
+                        int left = wf.left + cr.left;
+                        int top = wf.top + cr.top;
+                        int right = wf.right - cr.right;
+                        int bottom = wf.bottom - cr.bottom;
+                        frame.union(left, top, right, bottom);
+                    }
                 }
-                
-                // Don't include wallpaper in bounds calculation
-                if (!ws.mIsWallpaper) {
-                    final Rect wf = ws.mFrame;
-                    final Rect cr = ws.mContentInsets;
-                    int left = wf.left + cr.left;
-                    int top = wf.top + cr.top;
-                    int right = wf.right - cr.right;
-                    int bottom = wf.bottom - cr.bottom;
-                    frame.union(left, top, right, bottom);
-                }
+            } finally {
+                Surface.closeTransaction();
+                Binder.restoreCallingIdentity(ident);
             }
-            Binder.restoreCallingIdentity(ident);
 
             // Constrain frame to the screen size.
             frame.intersect(0, 0, dw, dh);
@@ -5861,9 +5882,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
             // The screenshot API does not apply the current screen rotation.
             rot = getDefaultDisplayContentLocked().getDisplay().getRotation();
-            // Allow for abnormal hardware orientation
-            rot = (rot + (android.os.SystemProperties.getInt("ro.sf.hwrotation",0) / 90 )) % 4;
-
             int fw = frame.width();
             int fh = frame.height();
 
@@ -6836,8 +6854,6 @@ public class WindowManagerService extends IWindowManager.Stub
         sl = reduceConfigLayout(sl, Surface.ROTATION_90, density, unrotDh, unrotDw);
         sl = reduceConfigLayout(sl, Surface.ROTATION_180, density, unrotDw, unrotDh);
         sl = reduceConfigLayout(sl, Surface.ROTATION_270, density, unrotDh, unrotDw);
-        //netlars
-        //force TabletUI
         outConfig.smallestScreenWidthDp = 721;
         outConfig.screenLayout = sl;
     }
@@ -6995,10 +7011,7 @@ public class WindowManagerService extends IWindowManager.Stub
             }
 
             // Determine whether a hard keyboard is available and enabled.
-            boolean hardKeyboardAvailable = false;
-            if (!mForceDisableHardwareKeyboard) {
-                hardKeyboardAvailable = config.keyboard != Configuration.KEYBOARD_NOKEYS;
-            }
+            boolean hardKeyboardAvailable = config.keyboard != Configuration.KEYBOARD_NOKEYS;
             if (hardKeyboardAvailable != mHardKeyboardAvailable) {
                 mHardKeyboardAvailable = hardKeyboardAvailable;
                 mHardKeyboardEnabled = hardKeyboardAvailable;
@@ -9445,7 +9458,7 @@ public class WindowManagerService extends IWindowManager.Stub
                             + " / " + mCurConfiguration + " / 0x"
                             + Integer.toHexString(diff));
                 }
-                win.mConfiguration = mCurConfiguration;
+                win.setConfiguration(mCurConfiguration);
                 if (DEBUG_ORIENTATION &&
                         winAnimator.mDrawState == WindowStateAnimator.DRAW_PENDING) Slog.i(
                         TAG, "Resizing " + win + " WITH DRAW PENDING");
