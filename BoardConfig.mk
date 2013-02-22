@@ -39,11 +39,11 @@ BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
 #BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
 BOARD_WLAN_DEVICE           := bcmdhd
 #WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_FW_PATH_STA     := "/system/etc/firmware/fw_bcm4329.bin"
-WIFI_DRIVER_FW_PATH_P2P     := "/system/etc/firmware/fw_bcm4329_p2p.bin"
-WIFI_DRIVER_FW_PATH_AP      := "/system/etc/firmware/fw_bcm4329_apsta.bin"
-#WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
-#WIFI_DRIVER_MODULE_NAME     := "wlan"
+#WIFI_DRIVER_FW_PATH_STA     := "/system/etc/firmware/fw_bcm4329.bin"
+#WIFI_DRIVER_FW_PATH_P2P     := "/system/etc/firmware/fw_bcm4329_p2p.bin"
+#WIFI_DRIVER_FW_PATH_AP      := "/system/etc/firmware/fw_bcm4329_apsta.bin"
+WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
+WIFI_DRIVER_MODULE_NAME     := "wlan"
 
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
@@ -55,8 +55,8 @@ BOARD_USE_LEGACY_UI := true
 #BOARD_USES_ALSA_AUDIO := true
 
 # Camera Setup
-#BOARD_USES_LEGACY_CAMERA := true
 USE_CAMERA_STUB := true
+BOARD_USES_LEGACY_CAMERA := true
 #BOARD_CAMERA_USE_MM_HEAP := true
 
 # No HWCOMPOSER - TO DO
