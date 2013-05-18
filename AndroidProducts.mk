@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/full_rk29board.mk
+    $(LOCAL_DIR)/cm.mk
