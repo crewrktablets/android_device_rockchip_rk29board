@@ -21,6 +21,8 @@ TARGET_GLOBAL_CFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
+TARGET_BOARD_PLATFORM := rk29board
+TARGET_BOARD_HARDWARE := rk29board
 
 # Use a smaller subset of system fonts to keep image size lower
 SMALLER_FONT_FOOTPRINT := true
@@ -35,8 +37,8 @@ SMALLER_FONT_FOOTPRINT := true
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-#BOARD_HOSTAPD_DRIVER        := NL80211
-#BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
+BOARD_HOSTAPD_DRIVER        := WEXT
+BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
 BOARD_WLAN_DEVICE           := bcmdhd
 #WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
 #WIFI_DRIVER_FW_PATH_STA     := "/system/etc/firmware/fw_bcm4329.bin"
@@ -48,6 +50,7 @@ WIFI_DRIVER_MODULE_NAME     := "wlan"
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
 USE_OPENGL_RENDERER := true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 1
 BOARD_USE_LEGACY_UI := true
 
 # Audio
