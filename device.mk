@@ -129,6 +129,16 @@ PRODUCT_PACKAGES += \
         librs_jni \
         com.android.future.usb.accessory
 
+# VPU Libs
+PRODUCT_PACKAGES += \
+	libapedec \
+	libjpeghwdec \
+	libjpeghwenc \
+	libOMX_Core \
+	libomxvpu \
+	libomxvpu_enc \
+	librk_demux
+
 # Filesystem management tools    
 PRODUCT_PACKAGES += \
         make_ext4fs \

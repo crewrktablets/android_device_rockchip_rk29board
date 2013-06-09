@@ -21,6 +21,8 @@ TARGET_GLOBAL_CFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
+TARGET_BOARD_PLATFORM := rk29board
+TARGET_BOARD_HARDWARE := rk29board
 
 # Use a smaller subset of system fonts to keep image size lower
 SMALLER_FONT_FOOTPRINT := true
