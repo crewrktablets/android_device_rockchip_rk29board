@@ -1,11 +1,10 @@
-  # config.mk
+# config.mk
 #
 # Product-specific compile-time definitions.
 #
 
 # The generic product target doesn't have any hardware-specific pieces.
 TARGET_NO_BOOTLOADER := true
-
 TARGET_NO_KERNEL := true
 # TARGET_PREBUILT_KERNEL := kernel/rockchip/rk29board
 TARGET_KERNEL_SOURCE := kernel/rockchip/rk29board
@@ -97,4 +96,3 @@ BOARD_VOLD_MAX_PARTITIONS := 12
 BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/class/android_usb/f_mass_storage/lun%d/file"
-
