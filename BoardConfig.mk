@@ -1,11 +1,20 @@
-# config.mk
+  # config.mk
 #
 # Product-specific compile-time definitions.
 #
 
 # The generic product target doesn't have any hardware-specific pieces.
 TARGET_NO_BOOTLOADER := true
+
 TARGET_NO_KERNEL := true
+# TARGET_PREBUILT_KERNEL := kernel/rockchip/rk29board
+TARGET_KERNEL_SOURCE := kernel/rockchip/rk29board
+# TARGET_KERNEL_CONFIG := odys_loox_plus_defconfig
+
+# KERNEL_EXTERNAL_MODULES:
+#	make -C device/rockchip/rk29board/vivante/ KERNEL_DIR=$(KERNEL_OUT) ARCH="arm" CROSS_COMPILE="arm-eabi-" CONFIG_VIVANTE=m
+#	mv device/rockchip/rk29board/vivante/galcore.ko $(KERNEL_MODULES_OUT)
+# TARGET_KERNEL_MODULES := KERNEL_EXTERNAL_MODULES
 
 PRODUCT_CHARACTERISTICS := tablet
 
@@ -21,6 +30,22 @@ TARGET_GLOBAL_CFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a8 -mfpu=neon
 # -mfloat-abi=softfp
+TARGET_BOARD_PLATFORM := rk29board
+TARGET_BOARD_HARDWARE := rk29board
+ 
+# create EXT4 images
+TARGET_USERIMAGES_USE_EXT4 := true
+
+# Max image/partition sizes
+#BOARD_BOOTIMAGE_MAX_SIZE := $(call image-size-from-data-size,0x00100000)
+#BOARD_RECOVERYIMAGE_MAX_SIZE := $(call image-size-from-data-size,0x00100000)
+#BOARD_SYSTEMIMAGE_MAX_SIZE := $(call image-size-from-data-size,0x07500000)
+#BOARD_USERDATAIMAGE_MAX_SIZE := $(call image-size-from-data-size,0x04ac0000)
+
+#defined image/partition sizes
+BOARD_SYSTEMIMAGE_PARTITION_SIZE   :=  471859200		# 450 MB
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 2621440000		# 2.5 GB
+BOARD_FLASH_BLOCK_SIZE := 512
 
 # Use a smaller subset of system fonts to keep image size lower
 SMALLER_FONT_FOOTPRINT := true
@@ -35,8 +60,8 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-#BOARD_HOSTAPD_DRIVER        := NL80211
-#BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
+BOARD_HOSTAPD_DRIVER        := WEXT
+BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
 BOARD_WLAN_DEVICE           := bcmdhd
 WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/wlan.ko"
 WIFI_DRIVER_MODULE_NAME     := "wlan"
@@ -44,7 +69,8 @@ WIFI_DRIVER_MODULE_NAME     := "wlan"
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
 USE_OPENGL_RENDERER := true
-BOARD_USE_LEGACY_UI := true
+# BOARD_USE_LEGACY_UI := true
+# NUM_FRAMEBUFFER_SURFACE_BUFFERS := 2
 
 # Audio
 #BOARD_USES_GENERIC_AUDIO := true
@@ -71,3 +97,4 @@ BOARD_VOLD_MAX_PARTITIONS := 12
 BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/class/android_usb/f_mass_storage/lun%d/file"
+

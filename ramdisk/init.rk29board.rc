@@ -60,9 +60,11 @@ on boot
     insmod /system/lib/modules/vpu_service.ko
     insmod /system/lib/modules/galcore.ko
     insmod /system/lib/modules/rk29-ipp.ko
+    insmod /system/lib/modules/wlan.ko
 
 # backlight
     chown system system /sys/class/backlight/rk28_bl/brightness
+    chmod 666 /sys/class/backlight/rk28_bl/brightness
 
 # for wifi
     mkdir /data/misc/wifi 0770 wifi wifi
