@@ -50,7 +50,7 @@ WIFI_DRIVER_MODULE_NAME     := "wlan"
 # Graphics
 BOARD_EGL_CFG := device/rockchip/rk29board/egl.cfg
 USE_OPENGL_RENDERER := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 1
+#NUM_FRAMEBUFFER_SURFACE_BUFFERS := 1
 BOARD_USE_LEGACY_UI := true
 
 # Audio

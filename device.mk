@@ -15,6 +15,7 @@
 # default is nosdcard, S/W button enabled in resource
 DEVICE_PACKAGE_OVERLAYS := device/rockchip/rk29board/overlay
 #PRODUCT_CHARACTERISTICS := nosdcard
+PRODUCT_CHARACTERISTICS := tablet
 
 # Copy prebuilt etcs
 PRODUCT_COPY_FILES += \
@@ -125,6 +126,18 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
         librs_jni \
         com.android.future.usb.accessory
+
+# VPU Libs
+PRODUCT_PACKAGES += \
+	libapedec \
+	libjpeghwdec \
+	libjpeghwenc \
+	libOMX_Core \
+	libomxvpu \
+	libomxvpu_enc \
+	librk_demux \
+	librkwmapro \
+	libffmpeg
 
 # Filesystem management tools    
 PRODUCT_PACKAGES += \

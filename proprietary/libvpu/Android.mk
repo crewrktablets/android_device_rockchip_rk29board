@@ -4,6 +4,11 @@ ifeq ($(strip $(TARGET_BOARD_PLATFORM)),rk29board)
 
 # Use BUILD_PREBUILT instead of PRODUCT_COPY_FILES to bring in the NOTICE file.
 include $(CLEAR_VARS)
+LOCAL_PREBUILT_LIBS := libffmpeg.so                   
+LOCAL_MODULE_TAGS := optional
+include $(BUILD_MULTI_PREBUILT)
+
+include $(CLEAR_VARS)
 LOCAL_PREBUILT_LIBS := libjpeghwdec.so                   
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_MULTI_PREBUILT)
@@ -35,6 +40,16 @@ include $(BUILD_MULTI_PREBUILT)
   
 include $(CLEAR_VARS)
 LOCAL_PREBUILT_LIBS := librk_on2.so                      
+LOCAL_MODULE_TAGS := optional
+include $(BUILD_MULTI_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_PREBUILT_LIBS := librkwmapro.so                      
+LOCAL_MODULE_TAGS := optional
+include $(BUILD_MULTI_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_PREBUILT_LIBS := libapedec.so                      
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_MULTI_PREBUILT)
 
