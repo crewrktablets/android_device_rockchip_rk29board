@@ -4,6 +4,8 @@
 # This is a common source of Android security bugs.
 #
 
+# modded by crewrktablets
+
 import /init.usb.rc
 import /init.${ro.hardware}.rc
 import /init.trace.rc
@@ -17,7 +19,7 @@ on early-init
     setcon u:r:init:s0
 
     start ueventd
-
+    
 # create mountpoints
     mkdir /mnt 0775 root system
 
@@ -240,6 +242,10 @@ on post-fs-data
     #setprop vold.post_fs_data_done 1
 
 on boot
+# crewrktablets
+    # add init.d
+    start sysinit
+
 # basic network init
     ifup lo
     hostname localhost
@@ -374,6 +380,13 @@ on property:vold.decrypt=trigger_shutdown_framework
 
 ## Daemon processes to be run by init.
 ##
+
+# add init.d Support  
+# crewrktablets
+service sysinit /system/bin/logwrapper /system/xbin/busybox run-parts /system/etc/init.d
+    #disable
+    oneshot
+
 service ueventd /sbin/ueventd
     class core
     critical
