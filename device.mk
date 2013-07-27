@@ -35,7 +35,7 @@ PRODUCT_COPY_FILES += \
 
 # Copy prebuilt media
 PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuild/media,system/media)
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/media,system/media)
 
 # Copy prebuilt modules
 PRODUCT_COPY_FILES += \
