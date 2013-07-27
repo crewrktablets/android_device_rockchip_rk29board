@@ -105,7 +105,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Camera
 PRODUCT_PACKAGES += \
         Camera \
-        LegacyCamera \
+#        LegacyCamera \
         camera.rk29board
 
 # Audio
