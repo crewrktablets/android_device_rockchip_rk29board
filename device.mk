@@ -33,6 +33,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/lib,system/lib)
 
+# Copy prebuilt media
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuild/media,system/media)
+
 # Copy prebuilt modules
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/lib/modules,system/lib/modules)
