@@ -1,44 +1,29 @@
 import init.rk29board.usb.rc
 
-on init    
-    # See storage config details at http://source.android.com/tech/storage/
-    mkdir /mnt/shell/emulated 0700 shell shell
-    #mkdir /storage 0550 system sdcard_r
-    mkdir /storage/emulated 0555 root root
+on early-init
+    mkdir /mnt/sdcard 0000 system system
+    # for backwards compatibility
 
-    export EXTERNAL_STORAGE /storage/emulated/legacy
-    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
-    export EMULATED_STORAGE_TARGET /storage/emulated
+    # for united data storage
+    mkdir /storage 0050 system sdcard_r
+    mkdir /storage/sdcard0 0000 system system
 
     # Support legacy paths
-    symlink /storage/emulated/legacy /sdcard
-    symlink /storage/emulated/legacy /mnt/sdcard
-    symlink /storage/emulated/legacy /storage/sdcard0
-    symlink /mnt/shell/emulated/0 /storage/emulated/legacy    
-        
+    symlink /mnt/sdcard /sdcard
 
-    export SECONDARY_STORAGE /mnt/external_sd
-    mkdir /mnt/external_sd 0777 system system
+    # this property is used for external_storage when not flash partition
+    export EXTERNAL_STORAGE_USE_DATA /storage/sdcard0
+    export EXTERNAL_STORAGE /mnt/sdcard
+    export SECOND_VOLUME_STORAGE /mnt/external_sd
+    mkdir /mnt/external_sd 0000 system system
     export THIRD_VOLUME_STORAGE /mnt/usb_storage
     mkdir /mnt/usb_storage 0777 system system
-
-
-on fs
-    #setprop ro.crypto.umount_sd false
-    
-    #insmod /rk29xxnand_ko.ko.3.0.8+
-    #mount ext4 mtd@system /system noatime nodiratime
-    #mount ext4 mtd@userdata /data nosuid nodev noatime nodiratime
-    #mount ext4 mtd@cache /cache nosuid nodev noatime nodiratime    
-
-    #mount vfat mtd@user /data/media wait noatime nodiratime nosuid nodev
-    mount vfat mtd@user /mnt/shell/emulated wait noatime nodiratime nosuid nodev
 
 on post-fs-data
     # we will remap this as /mnt/sdcard with the sdcard fuse tool
     mkdir /data/media 0770 media_rw media_rw
-    setprop vold.post_fs_data_done 1
-
+    chown media_rw media_rw /data/media
+    
 on init
     symlink /etc/bluez/bcm432x/BCM4329B1_TestOnly_0237_26MHz_SEMCO_B23.hcd /bcm4329_samsung.hcd
     symlink /etc/bluez/bcm432x/BCM4329B1_USI_WM-BN-BM-01.hcd /bcm4329_usi.hcd
@@ -88,11 +73,11 @@ on boot
     chmod 660 /sys/class/hdmi/hdmi-0/enable
     chmod 660 /sys/class/hdmi/hdmi-0/stable
 
-# create virtual SD card at /storage/sdcard0, based on the /data/media directory
+# create virtual SD card at /mnt/sdcard, based on the /data/media directory
 # daemon will drop to user/group system/media_rw after initializing
 # underlying files in /data/media will be created with user and group media_rw (1023)
-service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023    
-    class late_start
+#service sdcard /system/bin/sdcard /data/media /storage/sdcard0 1023 1023
+#    class late_start
 
 service wpa_supplicant /system/bin/wpa_supplicant \
     -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf

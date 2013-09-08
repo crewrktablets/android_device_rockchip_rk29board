@@ -14,7 +14,7 @@
 
 # default is nosdcard, S/W button enabled in resource
 DEVICE_PACKAGE_OVERLAYS := device/rockchip/rk29board/overlay
-#PRODUCT_CHARACTERISTICS := nosdcard
+PRODUCT_CHARACTERISTICS := tablet
 
 # Copy prebuilt bins
 PRODUCT_COPY_FILES += \
@@ -44,6 +44,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc/firmware,system/etc/firmware)
 
+# Copy media
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/media,system/media)
+
 # Copy keylayouts
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/usr/keylayout,system/usr/keylayout)
@@ -55,6 +59,16 @@ PRODUCT_COPY_FILES += \
 # Copy ramdisk files
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/ramdisk,root)
+
+# Copy Recovery-Ramdisk files
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/postrecoveryboot.sh:recovery/root/sbin/postrecoveryboot.sh \
+    $(LOCAL_PATH)/ramdisk/rk29xxnand_ko.ko.3.0.8+:recovery/root/rk29xxnand_ko.ko.3.0.8+ \
+    $(LOCAL_PATH)/ramdisk/init.rk29board.rc:recovery/root/init.rk29board.rc \
+    $(LOCAL_PATH)/ramdisk/init.rk29board.usb.rc:recovery/root/init.rk29board.usb.rc \
+    $(LOCAL_PATH)/ramdisk/misc.img:recovery/root/misc.img \
+    $(LOCAL_PATH)/ramdisk/ueventd.rk29board.rc:recovery/root/ueventd.rk29board.rc
+
 
 # copy Rktools
 PRODUCT_COPY_FILES += \
@@ -137,7 +151,8 @@ PRODUCT_PACKAGES += \
 	libOMX_Core \
 	libomxvpu \
 	libomxvpu_enc \
-	librk_demux
+	librk_demux \
+	librk_on2
 
 # Filesystem management tools    
 PRODUCT_PACKAGES += \

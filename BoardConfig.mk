@@ -28,6 +28,19 @@ TARGET_BOARD_HARDWARE := rk29board
 SMALLER_FONT_FOOTPRINT := true
 #MINIMAL_FONT_FOOTPRINT := true
 
+# Init
+TARGET_PROVIDES_INIT := true
+TARGET_PROVIDES_INIT_TARGET_RC := true
+TARGET_RECOVERY_INITRC := $(LOCAL_PATH)/recovery/init.rc
+
+# Recovery
+BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/rockchip/rk29board/recovery/recovery_keys.c
+BOARD_UMS_2ND_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun1/file"
+BOARD_UMS_LUNFILE := "/sys/class/android_usb/android0/f_mass_storage/lun0/file"
+BOARD_HAS_NO_SELECT_BUTTON := true
+BOARD_HAS_LARGE_FILESYSTEM := true
+
+
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
@@ -67,6 +80,12 @@ BOARD_HAVE_VPU := true
 # Enable WEBGL in WebKit
 ENABLE_WEBGL := true
 TARGET_FORCE_CPU_UPLOAD := true
+
+# Sensor
+#BOARD_SENSOR_ST := true
+#BOARD_SENSOR_NORMAL := true
+#BOARD_SENSOR_MID := true   #error
+#BOARD_SENSOR_MPU := true
 
 # Vold
 BOARD_VOLD_MAX_PARTITIONS := 12

@@ -75,6 +75,7 @@ int init_nusensors(hw_module_t const* module, hw_device_t** device);
 
 // conversion of acceleration data to SI units (m/s^2)
 #define CONVERT_A                   0.0098066
+//#define CONVERT_A                   (0.0000098066/1.5)
 #define CONVERT_A_X                 (CONVERT_A)
 #define CONVERT_A_Y                 (CONVERT_A)
 #define CONVERT_A_Z                 (CONVERT_A)
