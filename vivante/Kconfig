@@ -1,7 +1,0 @@
-menu "GPU Vivante"
-config VIVANTE
-	tristate "ROCKCHIP Vivante GPU"
-	default y
-	help
-          Vivante GPU module.
-endmenu
