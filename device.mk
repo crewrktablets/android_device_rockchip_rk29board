@@ -152,6 +152,7 @@ PRODUCT_PACKAGES += \
 	libomxvpu \
 	libomxvpu_enc \
 	librk_demux \
+	librkwmapro \
 	librk_on2
 
 # Filesystem management tools    
@@ -173,6 +174,11 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
         ro.allow.mock.location=1 \
         ro.debuggable=1 \
         persist.sys.usb.config=mtp
+
+# charger
+PRODUCT_PACKAGES += \
+	charger \
+	charger_res_images
 
 # android core stuff
 $(call inherit-product, frameworks/native/build/tablet-dalvik-heap.mk)
