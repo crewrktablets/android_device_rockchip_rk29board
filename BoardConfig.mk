@@ -46,7 +46,8 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/rockchip/rk29board/bluetooth
+BOARD_BLUEDROID_VENDOR_CONF := device/rockchip/rk29board/bluetooth/vnd_rockchip.txt
 
 # WLAN
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
