@@ -1,0 +1,7 @@
+#!/system/bin/sh
+#
+
+# tun
+insmod /system/lib/modules/tun.ko
+insmod /system/lib/modules/tcp_veno.ko
+echo veno > /proc/sys/net/ipv4/tcp_congestion_control
