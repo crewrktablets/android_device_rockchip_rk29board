@@ -1,0 +1,9 @@
+#!/system/bin/sh
+#
+# usb serial
+insmod /system/lib/modules/cp210x.ko
+insmod /system/lib/modules/pl2303.ko
+insmod /system/lib/modules/ftdi_sio.ko
+
+# usb modem (CDC ADM)
+insmod /system/lib/modules/cdc-acm.ko

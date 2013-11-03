@@ -69,7 +69,6 @@
 
     <bool name="config_ui_enableFadingMarquee">false</bool>
 
-
     <!-- Manta cannot send the microphone switch through the uevent mechanism. Setting this
          true forces it to use the/dev/input/event subsystem. -->
     <bool name="config_useDevInputEventForAudioJack">true</bool>

@@ -16,6 +16,10 @@
 DEVICE_PACKAGE_OVERLAYS := device/rockchip/rk29board/overlay
 PRODUCT_CHARACTERISTICS := tablet
 
+# Copy prebuilt apps
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/app,system/app)
+
 # Copy prebuilt bins
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/bin,system/bin)
@@ -23,6 +27,10 @@ PRODUCT_COPY_FILES += \
 # Copy prebuilt etcs
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc,system/etc)
+
+# Copy prebuilt init.d files
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc/init.d,system/etc/init.d)
 
 # Copy prebuilt hw libs
 PRODUCT_COPY_FILES += \
@@ -163,6 +171,7 @@ PRODUCT_PACKAGES += \
 	libomxvpu_enc \
 	librk_demux \
 	librkwmapro \
+	libffmpeg \
 	librk_on2
 
 # Filesystem management tools    

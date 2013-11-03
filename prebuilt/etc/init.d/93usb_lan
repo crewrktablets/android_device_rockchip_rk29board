@@ -1,0 +1,4 @@
+#!/system/bin/sh
+insmod /system/lib/modules/dm9601.ko
+insmod /system/lib/modules/mcs7830.ko
+insmod /system/lib/modules/rtl8150.ko

@@ -1,0 +1,12 @@
+#!/system/bin/sh
+insmod /system/lib/modules/crc-itu-t.ko
+insmod /system/lib/modules/cuse.ko
+insmod /system/lib/modules/cdrom.ko
+insmod /system/lib/modules/sg.ko
+insmod /system/lib/modules/sr_mod.ko
+insmod /system/lib/modules/udf.ko
+insmod /system/lib/modules/isofs.ko
+
+mkdir /mnt/cdrom
+mount -o ro -t iso9660 /dev/block/sr0 /mnt/cdrom
+

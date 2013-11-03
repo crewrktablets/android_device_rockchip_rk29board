@@ -1,0 +1,5 @@
+#!/system/bin/sh
+#Script to set correct permissions to /system/etc/init.d folder
+busybox mount -o remount,rw -t auto /system;
+busybox chmod -R 777 /system/etc/init.d;
+
