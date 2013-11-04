@@ -109,7 +109,7 @@ PRODUCT_COPY_FILES += \
     $(foreach file, $(BT_FIRMWARE_FILES), $(LOCAL_PATH)/bluetooth/firmware/$(file):system/vendor/firmware/$(file))
 
 PRODUCT_COPY_FILES += \
-	system/bluetooth/data/main.nonsmartphone.le.conf:system/etc/bluetooth/main.conf\
+	#system/bluetooth/data/main.nonsmartphone.le.conf:system/etc/bluetooth/main.conf\
         $(LOCAL_PATH)/bluetooth/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
 
 # Build.prop 
