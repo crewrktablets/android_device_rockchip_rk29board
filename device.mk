@@ -182,6 +182,10 @@ PRODUCT_PACKAGES += \
         utility_make_ext4fs \
         libstagefrighthw
 
+# Packages
+PRODUCT_PACKAGES += \
+        Launcher3
+
 # Fix for dalvik-cache
 PRODUCT_PROPERTY_OVERRIDES += \
 	dalvik.vm.dexopt-data-only=1
