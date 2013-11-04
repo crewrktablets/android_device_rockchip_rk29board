@@ -17,12 +17,12 @@ DEVICE_PACKAGE_OVERLAYS := device/rockchip/rk29board/overlay
 PRODUCT_CHARACTERISTICS := tablet
 
 # Copy prebuilt apps
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/app,system/app)
+#PRODUCT_COPY_FILES += \
+#	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/app,system/app)
 
 # Copy prebuilt bins
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/bin,system/bin)
+#PRODUCT_COPY_FILES += \
+#	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/bin,system/bin)
 
 # Copy prebuilt etcs
 PRODUCT_COPY_FILES += \
@@ -62,7 +62,7 @@ PRODUCT_COPY_FILES += \
 
 # Touchscreen driver
 PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/idc,system/usr/idc)
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/usr/idc,system/usr/idc)
 
 # Copy ramdisk files
 PRODUCT_COPY_FILES += \
