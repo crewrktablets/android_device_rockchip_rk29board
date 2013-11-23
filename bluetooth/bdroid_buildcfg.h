@@ -19,11 +19,6 @@
 #define _BDROID_BUILDCFG_H
 
 #define BTM_DEF_LOCAL_NAME  "Rockchip based Tablet"
-
-// At present either USB or UART is supported
-#define BLUETOOTH_HCI_USE_USB          TRUE
-
-// Bluetooth Low Power Mode is supported on BT4.0
 #define HCILP_INCLUDED		FALSE
 
 #endif
