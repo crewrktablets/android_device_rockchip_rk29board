@@ -32,6 +32,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc/init.d,system/etc/init.d)
 
+# Copy prebuilt ppp files
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc/ppp,system/etc/ppp)
+
+# Copy prebuilt usb_modeswitch.d files
+PRODUCT_COPY_FILES += \
+	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/etc/usb_modeswitch.d,system/etc/usb_modeswitch.d)
+
 # Copy prebuilt hw libs
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,device/rockchip/rk29board/prebuilt/lib/hw,system/lib/hw)
@@ -198,6 +206,19 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 PRODUCT_PACKAGES += \
 	charger \
 	charger_res_images
+
+# 3G
+PRODUCT_PACKAGES += \
+    rild \
+    chat    
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    keyguard.no_require_sim=true \
+    ro.com.android.dataroaming=true
+
+PRODUCT_PROPERTY_OVERRIDES += \
+                ril.function.dataonly=0
+# End 3G
 
 # android core stuff
 $(call inherit-product, frameworks/native/build/tablet-dalvik-heap.mk)
