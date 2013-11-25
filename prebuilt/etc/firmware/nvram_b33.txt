@@ -1,0 +1,67 @@
+# bcm94319wlusbn4l board
+# $Copyright (C) 2008 Broadcom Corporation$
+# $Id: bcm94319lcsdn4l.txt,v 1.2.4.8 2009/05/20 08:46:07 jayaramn Exp $
+
+# sdio extra configs
+hwhdr=0x060020031030031003100000
+
+#This includes the standard FUNCID and FUNCE tuples in the F1, F2, F3 and common CIS.
+RAW1=80 32 fe 21 02 0c 00 22 2a 01 01 00 00 c5 0 e6 00 00 00 00 00 40 00 00 ff ff 80 00 00 00 00 00 00 00 00 00 00 c8 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 20 04 D0 2 19 43 21 02 0c 00 22 04 00 20 00 5A
+
+sromrev=3
+vendid=0x14e4
+devid=0x4338
+
+#SDIO
+boardtype=0x58c
+
+boardrev=0x1204
+boardflags=0x02000200
+boardflags2=0x80
+
+xtalfreq=26000
+
+aa2g=1
+aa5g=0
+ag0=255
+
+pa0b0=5690
+pa0b1=64116
+pa0b2=65127
+pa0itssit=62
+
+pa0maxpwr=72
+opo=12
+
+rssismf2g=0xa 
+rssismc2g=0xb 
+rssisav2g=0x3 
+bxa2g=0
+
+ccode=0x5854
+regrev=4
+#ccode=ALL
+#cctl=0x0
+
+cckdigfilttype=6
+
+rxpo2g=3
+
+cckpo=0
+
+#Power-Per-Rate for nvram only 
+ofdmpo=0x66666666
+mcs2gpo0=0x8888
+mcs2gpo1=0x8888
+mcs2gpo2=0x0000
+mcs2gpo3=0x0000 
+mcs2gpo4=0x8888
+mcs2gpo5=0x8888
+
+#boardnum=1
+
+macaddr=00:21:19:c3:72:84
+
+
+#for mfgc
+otpimagesize=182
